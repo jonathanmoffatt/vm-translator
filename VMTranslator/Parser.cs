@@ -9,22 +9,33 @@ namespace VMTranslator
             if (line == "" || line.StartsWith("//"))
                 return null;
 
+            LineOfCode result = new LineOfCode { VmCode = line };
+
             string[] fragments = line.Split(' ');
             if (!Enum.TryParse(fragments[0], true, out Command c))
-                return new LineOfCode { Error = $"Command '{fragments[0]}' not recognised" };
+            {
+                result.Error = $"Command '{fragments[0]}' not recognised";
+                return result;
+            }
+            result.Command = c;
 
-            LineOfCode result = new LineOfCode { Command = c };
             if (fragments.Length > 1)
             {
                 if (!Enum.TryParse(fragments[1], true, out Segment s))
-                    return new LineOfCode { Error = $"Segment '{fragments[1]}' not recognised" };
+                {
+                    result.Error = $"Segment '{fragments[1]}' not recognised";
+                    return result;
+                }
                 result.Segment = s;
             }
             if (fragments.Length > 2)
             {
                 if (!int.TryParse(fragments[2], out int v))
-                    return new LineOfCode { Error = $"Value '{fragments[2]}' is not a valid integer" };
-                result.Value = int.Parse(fragments[2]);
+                {
+                    result.Error = $"Value '{fragments[2]}' is not a valid integer";
+                    return result;
+                }
+                result.Value = v;
             }
             bool arithmetic = result.Command != Command.Pop && result.Command != Command.Push;
             if (arithmetic)

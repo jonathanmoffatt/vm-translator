@@ -61,6 +61,12 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
+        public void ShouldIncludeTheOriginalVmCode()
+        {
+            classUnderTest.Parse("push constant 17").VmCode.Should().Be("push constant 17");
+        }
+
+        [TestMethod]
         public void ShouldRecognisePopCommands()
         {
             classUnderTest.Parse("pop local 2").Command.Should().Be(Command.Pop);
