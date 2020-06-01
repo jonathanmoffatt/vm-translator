@@ -125,7 +125,7 @@ namespace VMTranslator.Tests
         public void ShouldTranslatePushFromTemp()
         {
             classUnderTest.Translate(pushFromTemp)
-                .Should().Be("// push temp 4\n@5\nD=M\n@4\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+                .Should().Be("// push temp 4\n@5\nD=A\n@4\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
@@ -259,7 +259,7 @@ namespace VMTranslator.Tests
         public void ShouldTranslatePopToTemp()
         {
             classUnderTest.Translate(popToTemp)
-                .Should().Be("// pop temp 4\n@5\nD=M\n@4\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
+                .Should().Be("// pop temp 4\n@5\nD=A\n@4\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
         }
 
         [TestMethod]

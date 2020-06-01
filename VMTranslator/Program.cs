@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace VMTranslator
 {
@@ -19,7 +18,7 @@ namespace VMTranslator
                 return;
 
             string[] results = Translate(Path.GetFileNameWithoutExtension(sourceFile), parsedLines);
-            WriteToOutput(args, sourceFile, results);
+            WriteToOutput(sourceFile, results);
         }
 
         private static void DisplayIntro()
@@ -30,8 +29,6 @@ namespace VMTranslator
             Console.WriteLine();
             Console.WriteLine("source-file:");
             Console.WriteLine("    Path to file containing VM code code (must have an .vm file extension)");
-            Console.WriteLine("--console-only:");
-            Console.WriteLine("    If this option is specified, results will be written to the console instead of to an .asm file.");
             Console.WriteLine("");
             Console.WriteLine("Results will be written to a file named after the source file, but with a .asm file extension. Any existing file with this name will be overwritten.");
             Console.WriteLine("");
@@ -76,7 +73,6 @@ namespace VMTranslator
             var results = new List<string>();
             foreach (LineOfCode parsedLine in parsedLines)
             {
-                // stuff
                 if (parsedLine != null)
                     results.Add(translator.Translate(parsedLine));
             }
@@ -86,36 +82,24 @@ namespace VMTranslator
         private static bool CheckForParsingErrors(LineOfCode[] parsedLines)
         {
             bool valid = true;
-            for(var i = 0; i < parsedLines.Length; i++)
+            for (var i = 0; i < parsedLines.Length; i++)
             {
-                if (parsedLines[i].Error != null)
+                if (parsedLines[i]?.Error != null)
                 {
-                    Console.WriteLine($"Line {i+1}: {parsedLines[i].Error}");
+                    Console.WriteLine($"Line {i + 1}: {parsedLines[i].Error}");
                     valid = false;
                 }
             }
             return valid;
         }
 
-        private static bool IsConsoleOnly(string[] args)
+        private static void WriteToOutput(string sourceFile, string[] results)
         {
-            return args.Length > 1 && args[1] == "--console-only";
-        }
-
-        private static void WriteToOutput(string[] args, string sourceFile, string[] results)
-        {
-            if (IsConsoleOnly(args))
-            {
-                results.ToList().ForEach(r => Console.WriteLine(r));
-            }
-            else
-            {
-                string outputFile = $"{Path.GetDirectoryName(sourceFile)}/{Path.GetFileNameWithoutExtension(sourceFile)}.asm";
-                if (File.Exists(outputFile))
-                    File.Delete(outputFile);
-                File.WriteAllLines(outputFile, results);
-                Console.WriteLine($"Results written to {outputFile}");
-            }
+            string outputFile = $"{Path.GetDirectoryName(sourceFile)}/{Path.GetFileNameWithoutExtension(sourceFile)}.asm";
+            if (File.Exists(outputFile))
+                File.Delete(outputFile);
+            File.WriteAllLines(outputFile, results);
+            Console.WriteLine($"Results written to {outputFile}");
         }
 
     }
