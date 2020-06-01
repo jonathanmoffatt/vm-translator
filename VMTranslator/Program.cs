@@ -26,7 +26,7 @@ namespace VMTranslator
         {
             Console.WriteLine("VM Translator");
             Console.WriteLine("-------------");
-            Console.WriteLine("Usage: dotnet ./VMTranslator.dll [source-file] [--console-only]");
+            Console.WriteLine("Usage: dotnet ./VMTranslator.dll [source-file]");
             Console.WriteLine();
             Console.WriteLine("source-file:");
             Console.WriteLine("    Path to file containing VM code code (must have an .vm file extension)");
