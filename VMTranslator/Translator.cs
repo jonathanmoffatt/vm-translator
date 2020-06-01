@@ -8,12 +8,12 @@ namespace VMTranslator
         private const string pushConstant = "// {0}\n@{2}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
         private const string pushFromPointer0 = "// {0}\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
         private const string pushFromPointer1 = "// {0}\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string pushFromStatic = "// {0}\n@{1}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushFromStatic = "// {0}\n@{1}.{2}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
         private const string popToSegment = "// {0}\n@{1}\nD=M\n@{2}\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
         private const string popToTemp = "// {0}\n@5\nD=A\n@{2}\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
         private const string popToPointer0 = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n";
         private const string popToPointer1 = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n";
-        private const string popToStatic = "// {0}\n@{1}\nD=M\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
+        private const string popToStatic = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@{1}.{2}\nM=D\n";
         private const string add = "// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D+M\n@SP\nM=M+1\n";
         private const string sub = "// sub\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M-D\n@SP\nM=M+1\n";
         private const string and = "// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1\n";
@@ -85,7 +85,7 @@ namespace VMTranslator
                 Segment.Local => "LCL",
                 Segment.This => "THIS",
                 Segment.That => "THAT",
-                Segment.Static => $"{filename}.{lineOfCode.Value}",
+                Segment.Static => $"{filename}",
                 _ => null,
             };
         }

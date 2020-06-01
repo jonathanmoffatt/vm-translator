@@ -280,7 +280,7 @@ namespace VMTranslator.Tests
         public void ShouldTranslatePopToStatic()
         {
             classUnderTest.Translate(popToStatic)
-                .Should().Be("// pop static 5\n@Foo.5\nD=M\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
+                .Should().Be("// pop static 5\n@SP\nM=M-1\nA=M\nD=M\n@Foo.5\nM=D\n");
         }
     }
 
