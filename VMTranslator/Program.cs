@@ -18,7 +18,7 @@ namespace VMTranslator
             if (!CheckForParsingErrors(parsedLines))
                 return;
 
-            string[] results = Translate(parsedLines);
+            string[] results = Translate(Path.GetFileNameWithoutExtension(sourceFile), parsedLines);
             WriteToOutput(args, sourceFile, results);
         }
 
@@ -70,9 +70,9 @@ namespace VMTranslator
             return parsedLines.ToArray();
         }
 
-        private static string[] Translate(LineOfCode[] parsedLines)
+        private static string[] Translate(string filename, LineOfCode[] parsedLines)
         {
-            var translator = new Translator();
+            var translator = new Translator(filename);
             var results = new List<string>();
             foreach (LineOfCode parsedLine in parsedLines)
             {

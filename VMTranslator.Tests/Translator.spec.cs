@@ -65,11 +65,18 @@ namespace VMTranslator.Tests
             Segment = Segment.Pointer,
             Value = 1
         };
+        private readonly LineOfCode pushFromStatic = new LineOfCode
+        {
+            VmCode = "push static 5",
+            Command = Command.Push,
+            Segment = Segment.Static,
+            Value = 5
+        };
 
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Translator();
+            classUnderTest = new Translator("Foo");
         }
 
         [TestMethod]
@@ -115,26 +122,32 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
-        public void ShouldTranslatePushTemp()
+        public void ShouldTranslatePushFromTemp()
         {
             classUnderTest.Translate(pushFromTemp)
                 .Should().Be("// push temp 4\n@5\nD=M\n@4\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
-        public void ShouldTranslatePushPointer0()
+        public void ShouldTranslatePushFromPointer0()
         {
             classUnderTest.Translate(pushFromPointer0)
                 .Should().Be("// push pointer 0\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
-        public void ShouldTranslatePushPointer1()
+        public void ShouldTranslatePushFromPointer1()
         {
             classUnderTest.Translate(pushFromPointer1)
                 .Should().Be("// push pointer 1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
+        [TestMethod]
+        public void ShouldTranslatePushFromStatic()
+        {
+            classUnderTest.Translate(pushFromStatic)
+                .Should().Be("// push static 5\n@Foo.5\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+        }
     }
 
     #endregion
@@ -194,11 +207,18 @@ namespace VMTranslator.Tests
             Segment = Segment.Pointer,
             Value = 1
         };
+        private readonly LineOfCode popToStatic = new LineOfCode
+        {
+            VmCode = "pop static 5",
+            Command = Command.Pop,
+            Segment = Segment.Static,
+            Value = 5
+        };
 
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Translator();
+            classUnderTest = new Translator("Foo");
         }
 
         [TestMethod]
@@ -254,6 +274,13 @@ namespace VMTranslator.Tests
         {
             classUnderTest.Translate(popToPointer1)
                 .Should().Be("// pop pointer 1\n@SP\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslatePopToStatic()
+        {
+            classUnderTest.Translate(popToStatic)
+                .Should().Be("// pop static 5\n@Foo.5\nD=M\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
         }
     }
 
