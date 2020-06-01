@@ -35,23 +35,10 @@
             switch (lineOfCode.Command)
             {
                 case Command.Push:
-                    string push = lineOfCode.Segment switch
-                    {
-                        Segment.Constant => pushConstant,
-                        Segment.Pointer => lineOfCode.Value == 0 ? pushFromPointer0 : pushFromPointer1,
-                        Segment.Static => pushFromStatic,
-                        Segment.Temp => pushFromTemp,
-                        _ => pushFromSegment
-                    };
+                    string push = GetPushAssembly(lineOfCode);
                     return string.Format(push, lineOfCode.VmCode, GetRamForSegment(lineOfCode), lineOfCode.Value);
                 case Command.Pop:
-                    string pop = lineOfCode.Segment switch
-                    {
-                        Segment.Pointer => lineOfCode.Value == 0 ? popToPointer0 : popToPointer1,
-                        Segment.Static => popToStatic,
-                        Segment.Temp => popToTemp,
-                        _ => popToSegment
-                    };
+                    string pop = GetPopAssembly(lineOfCode);
                     return string.Format(pop, lineOfCode.VmCode, GetRamForSegment(lineOfCode), lineOfCode.Value);
                 case Command.Add:
                     return add;
@@ -76,17 +63,40 @@
             }
         }
 
+        private static string GetPopAssembly(LineOfCode lineOfCode)
+        {
+            switch (lineOfCode.Segment)
+            {
+                case Segment.Pointer: return lineOfCode.Value == 0 ? popToPointer0 : popToPointer1;
+                case Segment.Static: return popToStatic;
+                case Segment.Temp: return popToTemp;
+                default: return popToSegment;
+            }
+        }
+
+        private static string GetPushAssembly(LineOfCode lineOfCode)
+        {
+            switch (lineOfCode.Segment)
+            {
+                case Segment.Constant: return pushConstant;
+                case Segment.Pointer: return lineOfCode.Value == 0 ? pushFromPointer0 : pushFromPointer1;
+                case Segment.Static: return pushFromStatic;
+                case Segment.Temp: return pushFromTemp;
+                default: return pushFromSegment;
+            }
+        }
+
         private string GetRamForSegment(LineOfCode lineOfCode)
         {
-            return lineOfCode.Segment switch
+            switch (lineOfCode.Segment)
             {
-                Segment.Argument => "ARG",
-                Segment.Local => "LCL",
-                Segment.This => "THIS",
-                Segment.That => "THAT",
-                Segment.Static => $"{filename}",
-                _ => null,
-            };
+                case Segment.Argument: return "ARG";
+                case Segment.Local: return "LCL";
+                case Segment.This: return "THIS";
+                case Segment.That: return "THAT";
+                case Segment.Static: return $"{filename}";
+                default: return null;
+            }
         }
     }
 }
