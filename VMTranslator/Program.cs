@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace VMTranslator
 {
@@ -64,33 +65,22 @@ namespace VMTranslator
                     parsedLines.Add(parser.Parse(line));
                 }
             }
-            return parsedLines.ToArray();
+            return parsedLines.Where(p => p != null).ToArray();
         }
 
         private static string[] Translate(string filename, LineOfCode[] parsedLines)
         {
             var translator = new Translator(filename);
-            var results = new List<string>();
-            foreach (LineOfCode parsedLine in parsedLines)
-            {
-                if (parsedLine != null)
-                    results.Add(translator.Translate(parsedLine));
-            }
-            return results.ToArray();
+            return parsedLines.Select(p => translator.Translate(p)).ToArray();
         }
 
         private static bool CheckForParsingErrors(LineOfCode[] parsedLines)
         {
-            bool valid = true;
-            for (var i = 0; i < parsedLines.Length; i++)
+            foreach (LineOfCode parsedLine in parsedLines.Where(p => p.Error != null))
             {
-                if (parsedLines[i]?.Error != null)
-                {
-                    Console.WriteLine($"Line {i + 1}: {parsedLines[i].Error}");
-                    valid = false;
-                }
+                Console.WriteLine($"Line {parsedLine.LineNumber}: {parsedLine.Error}");
             }
-            return valid;
+            return parsedLines.All(p => p.Error == null);
         }
 
         private static void WriteToOutput(string sourceFile, string[] results)

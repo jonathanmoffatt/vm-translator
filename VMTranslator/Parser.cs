@@ -3,13 +3,21 @@ namespace VMTranslator
 {
     public class Parser
     {
+        private int lineNumber;
+
+        public Parser()
+        {
+            lineNumber = 0;
+        }
+
         public LineOfCode Parse(string line)
         {
+            lineNumber++;
             line = line.Trim();
             if (line == "" || line.StartsWith("//"))
                 return null;
 
-            LineOfCode result = new LineOfCode { VmCode = line };
+            LineOfCode result = new LineOfCode { VmCode = line, LineNumber = lineNumber };
 
             string[] fragments = line.Split(' ');
             if (!Enum.TryParse(fragments[0], true, out Command c))

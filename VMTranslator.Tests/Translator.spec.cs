@@ -344,22 +344,22 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldTranslateEq()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Eq })
-                .Should().Be("// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@SETRESULT\nD;JEQ\nD=-1\n(SETRESULT)\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+            classUnderTest.Translate(new LineOfCode { Command = Command.Eq, LineNumber = 11 })
+                .Should().Be("// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@EQ_11\nD;JEQ\nD=-1\n(EQ_11)\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateLt()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Lt })
-                .Should().Be("// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES\nD;JLT\nD=0\n@RETURN\n0;JMP\n(YES)\nD=-1\n(RETURN)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+            classUnderTest.Translate(new LineOfCode { Command = Command.Lt, LineNumber = 12 })
+                .Should().Be("// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_12\nD;JLT\nD=0\n@DONE_12\n0;JMP\n(YES_12)\nD=-1\n(DONE_12)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateGt()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Gt })
-                .Should().Be("// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES\nD;JGT\nD=0\n@RETURN\n0;JMP\n(YES)\nD=-1\n(RETURN)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+            classUnderTest.Translate(new LineOfCode { Command = Command.Gt, LineNumber = 13 })
+                .Should().Be("// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_13\nD;JGT\nD=0\n@DONE_13\n0;JMP\n(YES_13)\nD=-1\n(DONE_13)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
     }
 

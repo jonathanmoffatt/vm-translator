@@ -1,5 +1,4 @@
-﻿using System;
-namespace VMTranslator
+﻿namespace VMTranslator
 {
     public class Translator
     {
@@ -20,9 +19,9 @@ namespace VMTranslator
         private const string or = "// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D|M\n@SP\nM=M+1\n";
         private const string neg = "// neg\n@SP\nM=M-1\nA=M\nD=M\nM=-D\n@SP\nM=M+1\n";
         private const string not = "// not\n@SP\nM=M-1\nA=M\nD=M\nM=!D\n@SP\nM=M+1\n";
-        private const string eq = "// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@SETRESULT\nD;JEQ\nD=-1\n(SETRESULT)\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string lt = "// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES\nD;JLT\nD=0\n@RETURN\n0;JMP\n(YES)\nD=-1\n(RETURN)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string gt = "// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES\nD;JGT\nD=0\n@RETURN\n0;JMP\n(YES)\nD=-1\n(RETURN)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string eq = "// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@EQ_{0}\nD;JEQ\nD=-1\n(EQ_{0})\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string lt = "// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_{0}\nD;JLT\nD=0\n@DONE_{0}\n0;JMP\n(YES_{0})\nD=-1\n(DONE_{0})\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string gt = "// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_{0}\nD;JGT\nD=0\n@DONE_{0}\n0;JMP\n(YES_{0})\nD=-1\n(DONE_{0})\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
 
         private readonly string filename;
 
@@ -67,11 +66,11 @@ namespace VMTranslator
                 case Command.Not:
                     return not;
                 case Command.Eq:
-                    return eq;
+                    return string.Format(eq, lineOfCode.LineNumber);
                 case Command.Lt:
-                    return lt;
+                    return string.Format(lt, lineOfCode.LineNumber);
                 case Command.Gt:
-                    return gt;
+                    return string.Format(gt, lineOfCode.LineNumber);
                 default:
                     return null;
             }

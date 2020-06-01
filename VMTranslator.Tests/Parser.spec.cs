@@ -15,6 +15,15 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
+        public void ShouldIncrementLineNumberWithEachCall()
+        {
+            classUnderTest.Parse("add").LineNumber.Should().Be(1);
+            classUnderTest.Parse("// something");
+            classUnderTest.Parse("blah");
+            classUnderTest.Parse("push constant 17").LineNumber.Should().Be(4);
+        }
+
+        [TestMethod]
         public void ShouldReturnNullIfTheLineIsEmpty()
         {
             classUnderTest.Parse("   ").Should().BeNull();
