@@ -3,10 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace VMTranslator.Tests
 {
-    #region WhenTranslatingPushToAssembly
+    #region WhenTranslatingPushOperations
 
     [TestClass]
-    public class WhenTranslatingPushToAssembly
+    public class WhenTranslatingPushOperations
     {
         private Translator classUnderTest;
         private readonly LineOfCode pushFromLocal = new LineOfCode
@@ -152,10 +152,10 @@ namespace VMTranslator.Tests
 
     #endregion
 
-    #region WhenTranslatingPopToAssembly
+    #region WhenTranslatingPopOperations
 
     [TestClass]
-    public class WhenTranslatingPopToAssembly
+    public class WhenTranslatingPopOperations
     {
         private Translator classUnderTest;
         private readonly LineOfCode popToLocal = new LineOfCode
@@ -281,6 +281,85 @@ namespace VMTranslator.Tests
         {
             classUnderTest.Translate(popToStatic)
                 .Should().Be("// pop static 5\n@Foo.5\nD=M\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
+        }
+    }
+
+    #endregion
+
+    #region WhenTranslatingArithmeticOperations
+
+    [TestClass]
+    public class WhenTranslatingArithmeticOperations
+    {
+        private Translator classUnderTest;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            classUnderTest = new Translator("Foo");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateAdd()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Add })
+                .Should().Be("// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D+M\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateSub()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Sub })
+                .Should().Be("// sub\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M-D\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateAnd()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.And })
+                .Should().Be("// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateOr()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Or })
+                .Should().Be("// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D|M\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateNeg()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Neg })
+                .Should().Be("// neg\n@SP\nM=M-1\nA=M\nD=M\nM=-D\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateNot()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Not })
+                .Should().Be("// not\n@SP\nM=M-1\nA=M\nD=M\nM=!D\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateEq()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Eq })
+                .Should().Be("// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@SETRESULT\nD;JEQ\nD=-1\n(SETRESULT)\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateLt()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Lt })
+                .Should().Be("// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES\nD;JLT\nD=0\n@RETURN\n0;JMP\n(YES)\nD=-1\n(RETURN)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateGt()
+        {
+            classUnderTest.Translate(new LineOfCode { Command = Command.Gt })
+                .Should().Be("// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES\nD;JGT\nD=0\n@RETURN\n0;JMP\n(YES)\nD=-1\n(RETURN)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
     }
 
