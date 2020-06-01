@@ -125,5 +125,21 @@ namespace VMTranslator.Tests
         {
             classUnderTest.Parse("pop constant 17").Error.Should().Be("pop is not a valid operation on a constant");
         }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfTryingToPushAPointerGreaterThan1()
+        {
+            classUnderTest.Parse("push pointer 1").Error.Should().BeNull();
+            classUnderTest.Parse("push pointer 0").Error.Should().BeNull();
+            classUnderTest.Parse("push pointer 2").Error.Should().Be("pointer value can only be 0 or 1");
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfTryingToPopAPointerGreaterThan1()
+        {
+            classUnderTest.Parse("pop pointer 1").Error.Should().BeNull();
+            classUnderTest.Parse("pop pointer 0").Error.Should().BeNull();
+            classUnderTest.Parse("pop pointer 2").Error.Should().Be("pointer value can only be 0 or 1");
+        }
     }
 }

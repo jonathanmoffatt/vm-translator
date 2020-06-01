@@ -51,6 +51,8 @@ namespace VMTranslator
                     result.Error = "Stack operations must include a value";
                 else if (result.Command == Command.Pop && result.Segment == Segment.Constant)
                     result.Error = "pop is not a valid operation on a constant";
+                else if (result.Segment == Segment.Pointer && result.Value > 1)
+                    result.Error = "pointer value can only be 0 or 1";
             }
             return result;
         }
