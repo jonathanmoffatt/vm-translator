@@ -46,6 +46,21 @@ M=D
 @SP
 M=M+1
 ";
+        private const string pop =
+@"// {0}
+@{1}
+D=M
+@{2}
+D=D+A
+@SP
+M=M-1
+A=M
+A=M
+D=D+A
+A=D-A
+D=D-A
+M=D
+";
         private const string popPointer0 =
 @"// {0}
 @SP
@@ -53,16 +68,38 @@ M=M-1
 A=M
 D=M
 @THIS
-M=D";
+M=D
+";
+        private const string popPointer1 =
+@"// {0}
+@SP
+M=M-1
+A=M
+D=M
+@THAT
+M=D
+";
 
         public string Translate(LineOfCode parsedLine)
         {
-            string asm = parsedLine.Segment switch
+            string asm;
+            if (parsedLine.Command == Command.Push)
             {
-                Segment.Constant => pushConstant,
-                Segment.Pointer => parsedLine.Value == 0 ? pushPointer0 : pushPointer1,
-                _ => push
-            };
+                asm = parsedLine.Segment switch
+                {
+                    Segment.Constant => pushConstant,
+                    Segment.Pointer => parsedLine.Value == 0 ? pushPointer0 : pushPointer1,
+                    _ => push
+                };
+            }
+            else
+            {
+                asm = parsedLine.Segment switch
+                {
+                    Segment.Pointer =>  parsedLine.Value == 0 ? popPointer0 : popPointer1,
+                    _ => pop
+                };
+            }
             return string.Format(asm, parsedLine.VmCode, GetRamForSegment(parsedLine.Segment), parsedLine.Value);
         }
 
