@@ -3,82 +3,13 @@ namespace VMTranslator
 {
     public class Translator
     {
-        private const string push =
-@"// {0}
-@{1}
-D=M
-@{2}
-A=D+A
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-";
-        private const string pushConstant =
-@"// {0}
-@{2}
-D=A
-@SP
-A=M
-M=D
-@SP
-M=M+1
-";
-        private const string pushPointer0 =
-@"// {0}
-@THIS
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-";
-        private const string pushPointer1 =
-@"// {0}
-@THAT
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-";
-        private const string pop =
-@"// {0}
-@{1}
-D=M
-@{2}
-D=D+A
-@SP
-M=M-1
-A=M
-A=M
-D=D+A
-A=D-A
-D=D-A
-M=D
-";
-        private const string popPointer0 =
-@"// {0}
-@SP
-M=M-1
-A=M
-D=M
-@THIS
-M=D
-";
-        private const string popPointer1 =
-@"// {0}
-@SP
-M=M-1
-A=M
-D=M
-@THAT
-M=D
-";
+        private const string push = "// {0}\n@{1}\nD=M\n@{2}\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushConstant = "// {0}\n@{2}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushPointer0 = "// {0}\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushPointer1 = "// {0}\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pop = "// {0}\n@{1}\nD=M\n@{2}\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
+        private const string popPointer0 = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n";
+        private const string popPointer1 = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n";
 
         public string Translate(LineOfCode parsedLine)
         {

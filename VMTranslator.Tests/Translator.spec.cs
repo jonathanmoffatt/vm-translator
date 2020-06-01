@@ -82,136 +82,57 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldTranslatePushFromLocal()
         {
-            classUnderTest.Translate(pushFromLocal).Should().Be(
-@"// push local 3
-@LCL
-D=M
-@3
-A=D+A
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushFromLocal)
+                .Should().Be("// push local 3\n@LCL\nD=M\n@3\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePushFromArgument()
         {
-            classUnderTest.Translate(pushFromArgument).Should().Be(
-@"// push argument 2
-@ARG
-D=M
-@2
-A=D+A
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushFromArgument)
+                .Should().Be("// push argument 2\n@ARG\nD=M\n@2\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePushFromThis()
         {
-            classUnderTest.Translate(pushFromThis).Should().Be(
-@"// push this 5
-@THIS
-D=M
-@5
-A=D+A
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushFromThis)
+                .Should().Be("// push this 5\n@THIS\nD=M\n@5\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePushFromThat()
         {
-            classUnderTest.Translate(pushFromThat).Should().Be(
-@"// push that 6
-@THAT
-D=M
-@6
-A=D+A
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushFromThat)
+                .Should().Be("// push that 6\n@THAT\nD=M\n@6\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePushConstant()
         {
-            classUnderTest.Translate(pushConstant).Should().Be(
-@"// push constant 17
-@17
-D=A
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushConstant)
+                .Should().Be("// push constant 17\n@17\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePushTemp()
         {
-            classUnderTest.Translate(pushFromTemp).Should().Be(
-@"// push temp 4
-@5
-D=M
-@4
-A=D+A
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushFromTemp)
+                .Should().Be("// push temp 4\n@5\nD=M\n@4\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePushPointer0()
         {
-            classUnderTest.Translate(pushFromPointer0).Should().Be(
-@"// push pointer 0
-@THIS
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushFromPointer0)
+                .Should().Be("// push pointer 0\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePushPointer1()
         {
-            classUnderTest.Translate(pushFromPointer1).Should().Be(
-@"// push pointer 1
-@THAT
-D=M
-@SP
-A=M
-M=D
-@SP
-M=M+1
-");
+            classUnderTest.Translate(pushFromPointer1)
+                .Should().Be("// push pointer 1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
     }
@@ -289,133 +210,50 @@ M=M+1
         [TestMethod]
         public void ShouldTranslatePopToLocal()
         {
-            classUnderTest.Translate(popToLocal).Should().Be(
-@"// pop local 3
-@LCL
-D=M
-@3
-D=D+A
-@SP
-M=M-1
-A=M
-A=M
-D=D+A
-A=D-A
-D=D-A
-M=D
-");
+            classUnderTest.Translate(popToLocal)
+                .Should().Be("// pop local 3\n@LCL\nD=M\n@3\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePopToArgument()
         {
-            classUnderTest.Translate(popToArgument).Should().Be(
-@"// pop argument 2
-@ARG
-D=M
-@2
-D=D+A
-@SP
-M=M-1
-A=M
-A=M
-D=D+A
-A=D-A
-D=D-A
-M=D
-"
-);
+            classUnderTest.Translate(popToArgument)
+                .Should().Be("// pop argument 2\n@ARG\nD=M\n@2\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePopToThis()
         {
-            classUnderTest.Translate(popToThis).Should().Be(
-@"// pop this 5
-@THIS
-D=M
-@5
-D=D+A
-@SP
-M=M-1
-A=M
-A=M
-D=D+A
-A=D-A
-D=D-A
-M=D
-"
-);
+            classUnderTest.Translate(popToThis)
+                .Should().Be("// pop this 5\n@THIS\nD=M\n@5\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePopToThat()
         {
-            classUnderTest.Translate(popToThat).Should().Be(
-@"// pop that 6
-@THAT
-D=M
-@6
-D=D+A
-@SP
-M=M-1
-A=M
-A=M
-D=D+A
-A=D-A
-D=D-A
-M=D
-"
-);
+            classUnderTest.Translate(popToThat)
+                .Should().Be("// pop that 6\n@THAT\nD=M\n@6\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePopToTemp()
         {
-            classUnderTest.Translate(popToTemp).Should().Be(
-@"// pop temp 4
-@5
-D=M
-@4
-D=D+A
-@SP
-M=M-1
-A=M
-A=M
-D=D+A
-A=D-A
-D=D-A
-M=D
-"
-);
+            classUnderTest.Translate(popToTemp)
+                .Should().Be("// pop temp 4\n@5\nD=M\n@4\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePopToPointer0()
         {
-            classUnderTest.Translate(popToPointer0).Should().Be(
-@"// pop pointer 0
-@SP
-M=M-1
-A=M
-D=M
-@THIS
-M=D
-");
+            classUnderTest.Translate(popToPointer0)
+                .Should().Be("// pop pointer 0\n@SP\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n");
         }
 
         [TestMethod]
         public void ShouldTranslatePopToPointer1()
         {
-            classUnderTest.Translate(popToPointer1).Should().Be(
-@"// pop pointer 1
-@SP
-M=M-1
-A=M
-D=M
-@THAT
-M=D
-");
+            classUnderTest.Translate(popToPointer1)
+                .Should().Be("// pop pointer 1\n@SP\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n");
         }
     }
 
