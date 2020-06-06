@@ -12,63 +12,63 @@ namespace VMTranslator.Tests
         private readonly LineOfCode pushFromLocal = new LineOfCode
         {
             VmCode = "push local 3",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.Local,
             Value = 3
         };
         private readonly LineOfCode pushFromArgument = new LineOfCode
         {
             VmCode = "push argument 2",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.Argument,
             Value = 2
         };
         private readonly LineOfCode pushFromThis = new LineOfCode
         {
             VmCode = "push this 5",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.This,
             Value = 5
         };
         private readonly LineOfCode pushFromThat = new LineOfCode
         {
             VmCode = "push that 6",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.That,
             Value = 6
         };
         private readonly LineOfCode pushConstant = new LineOfCode
         {
             VmCode = "push constant 17",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.Constant,
             Value = 17
         };
         private readonly LineOfCode pushFromTemp = new LineOfCode
         {
             VmCode = "push temp 4",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.Temp,
             Value = 4
         };
         private readonly LineOfCode pushFromPointer0 = new LineOfCode
         {
             VmCode = "push pointer 0",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.Pointer,
             Value = 0
         };
         private readonly LineOfCode pushFromPointer1 = new LineOfCode
         {
             VmCode = "push pointer 1",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.Pointer,
             Value = 1
         };
         private readonly LineOfCode pushFromStatic = new LineOfCode
         {
             VmCode = "push static 5",
-            Command = Command.Push,
+            Instruction = InstructionType.Push,
             Segment = Segment.Static,
             Value = 5
         };
@@ -161,56 +161,56 @@ namespace VMTranslator.Tests
         private readonly LineOfCode popToLocal = new LineOfCode
         {
             VmCode = "pop local 3",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.Local,
             Value = 3
         };
         private readonly LineOfCode popToArgument = new LineOfCode
         {
             VmCode = "pop argument 2",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.Argument,
             Value = 2
         };
         private readonly LineOfCode popToThis = new LineOfCode
         {
             VmCode = "pop this 5",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.This,
             Value = 5
         };
         private readonly LineOfCode popToThat = new LineOfCode
         {
             VmCode = "pop that 6",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.That,
             Value = 6
         };
         private readonly LineOfCode popToTemp = new LineOfCode
         {
             VmCode = "pop temp 4",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.Temp,
             Value = 4
         };
         private readonly LineOfCode popToPointer0 = new LineOfCode
         {
             VmCode = "pop pointer 0",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.Pointer,
             Value = 0
         };
         private readonly LineOfCode popToPointer1 = new LineOfCode
         {
             VmCode = "pop pointer 1",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.Pointer,
             Value = 1
         };
         private readonly LineOfCode popToStatic = new LineOfCode
         {
             VmCode = "pop static 5",
-            Command = Command.Pop,
+            Instruction = InstructionType.Pop,
             Segment = Segment.Static,
             Value = 5
         };
@@ -302,63 +302,63 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldTranslateAdd()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Add })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Add })
                 .Should().Be("// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D+M\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateSub()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Sub })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Sub })
                 .Should().Be("// sub\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M-D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateAnd()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.And })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.And })
                 .Should().Be("// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateOr()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Or })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Or })
                 .Should().Be("// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D|M\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateNeg()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Neg })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Neg })
                 .Should().Be("// neg\n@SP\nM=M-1\nA=M\nD=M\nM=-D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateNot()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Not })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Not })
                 .Should().Be("// not\n@SP\nM=M-1\nA=M\nD=M\nM=!D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateEq()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Eq, LineNumber = 11 })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Eq, LineNumber = 11 })
                 .Should().Be("// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@EQ_11\nD;JEQ\nD=-1\n(EQ_11)\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateLt()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Lt, LineNumber = 12 })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Lt, LineNumber = 12 })
                 .Should().Be("// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_12\nD;JLT\nD=0\n@DONE_12\n0;JMP\n(YES_12)\nD=-1\n(DONE_12)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
         public void ShouldTranslateGt()
         {
-            classUnderTest.Translate(new LineOfCode { Command = Command.Gt, LineNumber = 13 })
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Gt, LineNumber = 13 })
                 .Should().Be("// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_13\nD;JGT\nD=0\n@DONE_13\n0;JMP\n(YES_13)\nD=-1\n(DONE_13)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
         }
     }

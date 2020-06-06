@@ -32,31 +32,31 @@
 
         public string Translate(LineOfCode lineOfCode)
         {
-            switch (lineOfCode.Command)
+            switch (lineOfCode.Instruction)
             {
-                case Command.Push:
+                case InstructionType.Push:
                     string push = GetPushAssembly(lineOfCode);
                     return string.Format(push, lineOfCode.VmCode, GetRamForSegment(lineOfCode), lineOfCode.Value);
-                case Command.Pop:
+                case InstructionType.Pop:
                     string pop = GetPopAssembly(lineOfCode);
                     return string.Format(pop, lineOfCode.VmCode, GetRamForSegment(lineOfCode), lineOfCode.Value);
-                case Command.Add:
+                case InstructionType.Add:
                     return add;
-                case Command.Sub:
+                case InstructionType.Sub:
                     return sub;
-                case Command.And:
+                case InstructionType.And:
                     return and;
-                case Command.Or:
+                case InstructionType.Or:
                     return or;
-                case Command.Neg:
+                case InstructionType.Neg:
                     return neg;
-                case Command.Not:
+                case InstructionType.Not:
                     return not;
-                case Command.Eq:
+                case InstructionType.Eq:
                     return string.Format(eq, lineOfCode.LineNumber);
-                case Command.Lt:
+                case InstructionType.Lt:
                     return string.Format(lt, lineOfCode.LineNumber);
-                case Command.Gt:
+                case InstructionType.Gt:
                     return string.Format(gt, lineOfCode.LineNumber);
                 default:
                     return null;

@@ -1,6 +1,6 @@
 ﻿namespace VMTranslator
 {
-    public enum Command
+    public enum InstructionType
     {
         Add,
         Neg,
@@ -15,16 +15,18 @@
         Pop,
         Goto,
         IfGoto,
-        Label
+        Label,
+        NotRecognised
     }
 
-    public enum CommandCategory
+    public enum InstructionCategory
     {
         Stack,
         Branching,
         Function,
         Arithmetic,
-        Logical
+        Logical,
+        NotRecognised
     }
 
 }

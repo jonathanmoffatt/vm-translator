@@ -4,31 +4,33 @@
     {
         public string VmCode { get; set; }
         public int LineNumber { get; set; }
-        public Command Command { get; set; }
+        public InstructionType? Instruction { get; set; }
         public Segment? Segment { get; set; }
         public int? Value { get; set; }
         public string Label { get; set; }
         public string Error { get; set; }
 
-        public CommandCategory Category
+        public InstructionCategory Category
         {
             get
             {
-                switch(Command)
+                switch(Instruction)
                 {
-                    case Command.Push:
-                    case Command.Pop:
-                        return CommandCategory.Stack;
-                    case Command.Goto:
-                    case Command.IfGoto:
-                    case Command.Label:
-                        return CommandCategory.Branching;
-                    case Command.Eq:
-                    case Command.Gt:
-                    case Command.Lt:
-                        return CommandCategory.Logical;
+                    case null:
+                        return InstructionCategory.NotRecognised;
+                    case InstructionType.Push:
+                    case InstructionType.Pop:
+                        return InstructionCategory.Stack;
+                    case InstructionType.Goto:
+                    case InstructionType.IfGoto:
+                    case InstructionType.Label:
+                        return InstructionCategory.Branching;
+                    case InstructionType.Eq:
+                    case InstructionType.Gt:
+                    case InstructionType.Lt:
+                        return InstructionCategory.Logical;
                     default:
-                        return CommandCategory.Arithmetic;
+                        return InstructionCategory.Arithmetic;
                 }
             }
         }

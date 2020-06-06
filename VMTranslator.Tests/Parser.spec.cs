@@ -44,15 +44,15 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldReturnStackArithmeticCommands()
         {
-            classUnderTest.Parse("add").Command.Should().Be(Command.Add);
-            classUnderTest.Parse("neg").Command.Should().Be(Command.Neg);
-            classUnderTest.Parse("eq").Command.Should().Be(Command.Eq);
-            classUnderTest.Parse("or").Command.Should().Be(Command.Or);
-            classUnderTest.Parse("sub").Command.Should().Be(Command.Sub);
-            classUnderTest.Parse("gt").Command.Should().Be(Command.Gt);
-            classUnderTest.Parse("lt").Command.Should().Be(Command.Lt);
-            classUnderTest.Parse("and").Command.Should().Be(Command.And);
-            classUnderTest.Parse("not").Command.Should().Be(Command.Not);
+            classUnderTest.Parse("add").Instruction.Should().Be(InstructionType.Add);
+            classUnderTest.Parse("neg").Instruction.Should().Be(InstructionType.Neg);
+            classUnderTest.Parse("eq").Instruction.Should().Be(InstructionType.Eq);
+            classUnderTest.Parse("or").Instruction.Should().Be(InstructionType.Or);
+            classUnderTest.Parse("sub").Instruction.Should().Be(InstructionType.Sub);
+            classUnderTest.Parse("gt").Instruction.Should().Be(InstructionType.Gt);
+            classUnderTest.Parse("lt").Instruction.Should().Be(InstructionType.Lt);
+            classUnderTest.Parse("and").Instruction.Should().Be(InstructionType.And);
+            classUnderTest.Parse("not").Instruction.Should().Be(InstructionType.Not);
         }
 
         [TestMethod]
@@ -66,7 +66,7 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldRecognisePushCommands()
         {
-            classUnderTest.Parse("push constant 17").Command.Should().Be(Command.Push);
+            classUnderTest.Parse("push constant 17").Instruction.Should().Be(InstructionType.Push);
         }
 
         [TestMethod]
@@ -78,7 +78,7 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldRecognisePopCommands()
         {
-            classUnderTest.Parse("pop local 2").Command.Should().Be(Command.Pop);
+            classUnderTest.Parse("pop local 2").Instruction.Should().Be(InstructionType.Pop);
         }
 
         [TestMethod]
@@ -154,9 +154,9 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldRecogniseBranchingCommands()
         {
-            classUnderTest.Parse("goto myLabel").Command.Should().Be(Command.Goto);
-            classUnderTest.Parse("if-goto myLabel").Command.Should().Be(Command.IfGoto);
-            classUnderTest.Parse("label myLabel").Command.Should().Be(Command.Label);
+            classUnderTest.Parse("goto myLabel").Instruction.Should().Be(InstructionType.Goto);
+            classUnderTest.Parse("if-goto myLabel").Instruction.Should().Be(InstructionType.IfGoto);
+            classUnderTest.Parse("label myLabel").Instruction.Should().Be(InstructionType.Label);
         }
 
         [TestMethod]

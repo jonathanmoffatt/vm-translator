@@ -14,65 +14,88 @@ namespace VMTranslator
         {
             lineNumber++;
             line = line.Trim();
-            if (line == "" || line.StartsWith("//"))
+            if (IsCommentOrWhitespace(line))
                 return null;
 
-            LineOfCode result = new LineOfCode { VmCode = line, LineNumber = lineNumber };
-
             string[] fragments = line.Split(' ');
-            if (!Enum.TryParse(fragments[0].Replace("-", ""), true, out Command c))
-            {
-                result.Error = $"Command '{fragments[0]}' not recognised";
-                return result;
-            }
-            result.Command = c;
+            LineOfCode loc = ParseInstruction(fragments, line);
 
-            if (result.Category == CommandCategory.Branching)
+            switch (loc.Category)
             {
-                if (fragments.Length < 2)
-                    result.Error = "Branching commands must have a label";
-                else
-                    result.Label = fragments[1];
+                case InstructionCategory.NotRecognised:
+                    return ParseUnrecognisedInstruction(loc, fragments);
+                case InstructionCategory.Branching:
+                    return ParseBranchingInstruction(loc, fragments);
+                case InstructionCategory.Stack:
+                    return ParseStackInstruction(loc, fragments);
+                case InstructionCategory.Arithmetic:
+                case InstructionCategory.Logical:
+                    return ParseArithmeticOrLogicalInstruction(loc, fragments);
             }
-            else
-            {
-                if (fragments.Length > 1)
-                {
-                    if (!Enum.TryParse(fragments[1], true, out Segment s))
-                    {
-                        result.Error = $"Segment '{fragments[1]}' not recognised";
-                        return result;
-                    }
-                    result.Segment = s;
-                }
-                if (fragments.Length > 2)
-                {
-                    if (!int.TryParse(fragments[2], out int v))
-                    {
-                        result.Error = $"Value '{fragments[2]}' is not a valid integer";
-                        return result;
-                    }
-                    result.Value = v;
-                }
-                if (result.Category == CommandCategory.Arithmetic)
-                {
-                    if (result.Segment != null)
-                        result.Error = "Arithmetic operation cannot include any additional arguments";
-                }
-                if (result.Category == CommandCategory.Stack)
-                {
-                    if (result.Segment == null)
-                        result.Error = "Stack operations must include a segment";
-                    else if (result.Value == null)
-                        result.Error = "Stack operations must include a value";
-                    else if (result.Command == Command.Pop && result.Segment == Segment.Constant)
-                        result.Error = "pop is not a valid operation on a constant";
-                    else if (result.Segment == Segment.Pointer && result.Value > 1)
-                        result.Error = "pointer value can only be 0 or 1";
-                }
-            }
-            return result;
+            return loc;
         }
 
+        private static LineOfCode ParseUnrecognisedInstruction(LineOfCode loc, string[] fragments)
+        {
+            loc.Error = $"Command '{fragments[0]}' not recognised";
+            return loc;
+        }
+
+        private static LineOfCode ParseArithmeticOrLogicalInstruction(LineOfCode loc, string[] fragments)
+        {
+            if (fragments.Length > 1)
+                loc.Error = "Arithmetic operation cannot include any additional arguments";
+            return loc;
+        }
+
+        private static LineOfCode ParseStackInstruction(LineOfCode loc, string[] fragments)
+        {
+            if (fragments.Length < 2)
+                loc.Error = "Stack operations must include a segment";
+            else if (fragments.Length < 3)
+                loc.Error = "Stack operations must include a value";
+            else
+            {
+                if (!Enum.TryParse(fragments[1], true, out Segment s))
+                    loc.Error = $"Segment '{fragments[1]}' not recognised";
+                else
+                {
+                    loc.Segment = s;
+                    if (!int.TryParse(fragments[2], out int v))
+                        loc.Error = $"Value '{fragments[2]}' is not a valid integer";
+                    else
+                    {
+                        loc.Value = v;
+                        if (loc.Instruction == InstructionType.Pop && loc.Segment == Segment.Constant)
+                            loc.Error = "pop is not a valid operation on a constant";
+                        else if (loc.Segment == Segment.Pointer && loc.Value > 1)
+                            loc.Error = "pointer value can only be 0 or 1";
+                    }
+                }
+            }
+            return loc;
+        }
+
+        private static LineOfCode ParseBranchingInstruction(LineOfCode loc, string[] fragments)
+        {
+            if (fragments.Length < 2)
+                loc.Error = "Branching commands must have a label";
+            else
+                loc.Label = fragments[1];
+            return loc;
+        }
+
+        private static bool IsCommentOrWhitespace(string line)
+        {
+            return line == "" || line.StartsWith("//");
+        }
+
+        private LineOfCode ParseInstruction(string[] fragments, string line)
+        {
+            LineOfCode loc = new LineOfCode { VmCode = line, LineNumber = lineNumber };
+            if (Enum.TryParse(fragments[0].Replace("-", ""), true, out InstructionType c))
+                loc.Instruction = c;
+            return loc;
+        }
     }
 }
