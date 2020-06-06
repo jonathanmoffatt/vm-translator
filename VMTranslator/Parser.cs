@@ -22,16 +22,37 @@ namespace VMTranslator
 
             switch (loc.Category)
             {
-                case InstructionCategory.NotRecognised:
-                    return ParseUnrecognisedInstruction(loc, fragments);
                 case InstructionCategory.Branching:
                     return ParseBranchingInstruction(loc, fragments);
                 case InstructionCategory.Stack:
                     return ParseStackInstruction(loc, fragments);
+                case InstructionCategory.Function:
+                    return ParseFunctionInstruction(loc, fragments);
                 case InstructionCategory.Arithmetic:
                 case InstructionCategory.Logical:
                     return ParseArithmeticOrLogicalInstruction(loc, fragments);
+                default:
+                    return ParseUnrecognisedInstruction(loc, fragments);
             }
+        }
+
+        private LineOfCode ParseFunctionInstruction(LineOfCode loc, string[] fragments)
+        {
+            if (loc.Instruction == InstructionType.Function || loc.Instruction == InstructionType.Call)
+            {
+                if (fragments.Length < 2)
+                    loc.Error = "Function must have a name";
+                else
+                {
+                    loc.FunctionName = fragments[1];
+                    if (fragments.Length < 3)
+                        loc.Error = loc.Instruction == InstructionType.Function ? "Function must specify the number of local variables" : "Call must specify the number of arguments";
+                    else
+                        SetValue(loc, fragments[2]);
+                }
+            }
+            if (loc.Instruction == InstructionType.Return && fragments.Length > 1)
+                loc.Error = "Return cannot have a name";
             return loc;
         }
 
@@ -44,16 +65,16 @@ namespace VMTranslator
         private static LineOfCode ParseArithmeticOrLogicalInstruction(LineOfCode loc, string[] fragments)
         {
             if (fragments.Length > 1)
-                loc.Error = "Arithmetic operation cannot include any additional arguments";
+                loc.Error = "Arithmetic instructions cannot include any additional arguments";
             return loc;
         }
 
         private static LineOfCode ParseStackInstruction(LineOfCode loc, string[] fragments)
         {
             if (fragments.Length < 2)
-                loc.Error = "Stack operations must include a segment";
+                loc.Error = "Stack instructions must include a segment";
             else if (fragments.Length < 3)
-                loc.Error = "Stack operations must include a value";
+                loc.Error = "Stack instructions must include a value";
             else
             {
                 if (!Enum.TryParse(fragments[1], true, out Segment s))
@@ -61,13 +82,10 @@ namespace VMTranslator
                 else
                 {
                     loc.Segment = s;
-                    if (!int.TryParse(fragments[2], out int v))
-                        loc.Error = $"Value '{fragments[2]}' is not a valid integer";
-                    else
+                    if (SetValue(loc, fragments[2]))
                     {
-                        loc.Value = v;
                         if (loc.Instruction == InstructionType.Pop && loc.Segment == Segment.Constant)
-                            loc.Error = "pop is not a valid operation on a constant";
+                            loc.Error = "pop cannot be performed on a constant";
                         else if (loc.Segment == Segment.Pointer && loc.Value > 1)
                             loc.Error = "pointer value can only be 0 or 1";
                     }
@@ -76,10 +94,21 @@ namespace VMTranslator
             return loc;
         }
 
+        private static bool SetValue(LineOfCode loc, string s)
+        {
+            if (!int.TryParse(s, out int v))
+            {
+                loc.Error = $"Value '{s}' is not a valid integer";
+                return false;
+            }
+            loc.Value = v;
+            return true;
+        }
+
         private static LineOfCode ParseBranchingInstruction(LineOfCode loc, string[] fragments)
         {
             if (fragments.Length < 2)
-                loc.Error = "Branching commands must have a label";
+                loc.Error = "Branching instructions must have a label";
             else
                 loc.Label = fragments[1];
             return loc;

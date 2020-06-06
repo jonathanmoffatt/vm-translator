@@ -42,7 +42,7 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
-        public void ShouldReturnStackArithmeticCommands()
+        public void ShouldReturnStackArithmeticInstructions()
         {
             classUnderTest.Parse("add").Instruction.Should().Be(InstructionType.Add);
             classUnderTest.Parse("neg").Instruction.Should().Be(InstructionType.Neg);
@@ -56,7 +56,7 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
-        public void ShouldLeaveSegmentAndValueEmptyForArithmeticCommands()
+        public void ShouldLeaveSegmentAndValueEmptyForArithmeticInstructions()
         {
             LineOfCode lineOfCode = classUnderTest.Parse("add");
             lineOfCode.Segment.Should().BeNull();
@@ -64,7 +64,7 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
-        public void ShouldRecognisePushCommands()
+        public void ShouldRecognisePushInstructions()
         {
             classUnderTest.Parse("push constant 17").Instruction.Should().Be(InstructionType.Push);
         }
@@ -76,7 +76,7 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
-        public void ShouldRecognisePopCommands()
+        public void ShouldRecognisePopInstructions()
         {
             classUnderTest.Parse("pop local 2").Instruction.Should().Be(InstructionType.Pop);
         }
@@ -96,19 +96,19 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldReturnAnErrorIfArithmeticOperationIncludesSegment()
         {
-            classUnderTest.Parse("add argument 3").Error.Should().Be("Arithmetic operation cannot include any additional arguments");
+            classUnderTest.Parse("add argument 3").Error.Should().Be("Arithmetic instructions cannot include any additional arguments");
         }
 
         [TestMethod]
         public void ShouldReturnAnErrorIfStackOperationDoesNotIncludeAValue()
         {
-            classUnderTest.Parse("pop local").Error.Should().Be("Stack operations must include a value");
+            classUnderTest.Parse("pop local").Error.Should().Be("Stack instructions must include a value");
         }
 
         [TestMethod]
         public void ShouldReturnAnErrorIfStackOperationDoesNotIncludeASegment()
         {
-            classUnderTest.Parse("push").Error.Should().Be("Stack operations must include a segment");
+            classUnderTest.Parse("push").Error.Should().Be("Stack instructions must include a segment");
         }
 
         [TestMethod]
@@ -132,7 +132,7 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldReturnAnErrorIfTryingToPopAConstant()
         {
-            classUnderTest.Parse("pop constant 17").Error.Should().Be("pop is not a valid operation on a constant");
+            classUnderTest.Parse("pop constant 17").Error.Should().Be("pop cannot be performed on a constant");
         }
 
         [TestMethod]
@@ -152,7 +152,7 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
-        public void ShouldRecogniseBranchingCommands()
+        public void ShouldRecogniseBranchingInstructions()
         {
             classUnderTest.Parse("goto myLabel").Instruction.Should().Be(InstructionType.Goto);
             classUnderTest.Parse("if-goto myLabel").Instruction.Should().Be(InstructionType.IfGoto);
@@ -160,7 +160,7 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
-        public void ShouldSetTheLabelForBranchingCommands()
+        public void ShouldSetTheLabelForBranchingInstructions()
         {
             classUnderTest.Parse("goto myLabel").Label.Should().Be("myLabel");
             classUnderTest.Parse("if-goto myLabel").Label.Should().Be("myLabel");
@@ -170,9 +170,73 @@ namespace VMTranslator.Tests
         [TestMethod]
         public void ShouldReturnAnErrorIfABranchingCommandDoesNotHaveALabel()
         {
-            classUnderTest.Parse("goto").Error.Should().Be("Branching commands must have a label");
-            classUnderTest.Parse("if-goto").Error.Should().Be("Branching commands must have a label");
-            classUnderTest.Parse("label").Error.Should().Be("Branching commands must have a label");
+            classUnderTest.Parse("goto").Error.Should().Be("Branching instructions must have a label");
+            classUnderTest.Parse("if-goto").Error.Should().Be("Branching instructions must have a label");
+            classUnderTest.Parse("label").Error.Should().Be("Branching instructions must have a label");
+        }
+
+        [TestMethod]
+        public void ShouldRecogniseFunctionInstructions()
+        {
+            classUnderTest.Parse("function myFunction 5").Instruction.Should().Be(InstructionType.Function);
+            classUnderTest.Parse("call myFunction 2").Instruction.Should().Be(InstructionType.Call);
+            classUnderTest.Parse("return").Instruction.Should().Be(InstructionType.Return);
+        }
+
+        [TestMethod]
+        public void ShouldSetFunctionNameForFunctionsAndCalls()
+        {
+            classUnderTest.Parse("function myFunction 5").FunctionName.Should().Be("myFunction");
+            classUnderTest.Parse("call myFunction 2").FunctionName.Should().Be("myFunction");
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfFunctionOrCallIsMissingAName()
+        {
+            classUnderTest.Parse("function").Error.Should().Be("Function must have a name");
+            classUnderTest.Parse("call").Error.Should().Be("Function must have a name");
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfReturnHasAName()
+        {
+            classUnderTest.Parse("return myFunction").Error.Should().Be("Return cannot have a name");
+        }
+
+        [TestMethod]
+        public void ShouldPutNumberOfLocalsIntoValueForFunctions()
+        {
+            classUnderTest.Parse("function myFunction 5").Value.Should().Be(5);
+        }
+
+        [TestMethod]
+        public void ShouldPutNumberOfArgumentsIntoValueForCalls()
+        {
+            classUnderTest.Parse("call myFunction 2").Value.Should().Be(2);
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfFunctionIsMissingTheNumberOfLocalVariables()
+        {
+            classUnderTest.Parse("function myFunction").Error.Should().Be("Function must specify the number of local variables");
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfCallIsMissingTheNumberOfArguments()
+        {
+            classUnderTest.Parse("call myFunction").Error.Should().Be("Call must specify the number of arguments");
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfFunctionHasInvalidNumberOfLocalVariables()
+        {
+            classUnderTest.Parse("function myFunction blah").Error.Should().Be("Value 'blah' is not a valid integer");
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfCallHasInvalidNumberOfArguments()
+        {
+            classUnderTest.Parse("call myFunction blah").Error.Should().Be("Value 'blah' is not a valid integer");
         }
     }
 }

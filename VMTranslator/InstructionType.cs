@@ -16,6 +16,9 @@
         Goto,
         IfGoto,
         Label,
+        Function,
+        Call,
+        Return,
         NotRecognised
     }
 
