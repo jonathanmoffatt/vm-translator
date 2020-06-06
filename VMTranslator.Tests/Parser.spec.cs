@@ -150,5 +150,29 @@ namespace VMTranslator.Tests
             classUnderTest.Parse("pop pointer 0").Error.Should().BeNull();
             classUnderTest.Parse("pop pointer 2").Error.Should().Be("pointer value can only be 0 or 1");
         }
+
+        [TestMethod]
+        public void ShouldRecogniseBranchingCommands()
+        {
+            classUnderTest.Parse("goto myLabel").Command.Should().Be(Command.Goto);
+            classUnderTest.Parse("if-goto myLabel").Command.Should().Be(Command.IfGoto);
+            classUnderTest.Parse("label myLabel").Command.Should().Be(Command.Label);
+        }
+
+        [TestMethod]
+        public void ShouldSetTheLabelForBranchingCommands()
+        {
+            classUnderTest.Parse("goto myLabel").Label.Should().Be("myLabel");
+            classUnderTest.Parse("if-goto myLabel").Label.Should().Be("myLabel");
+            classUnderTest.Parse("label myLabel").Label.Should().Be("myLabel");
+        }
+
+        [TestMethod]
+        public void ShouldReturnAnErrorIfABranchingCommandDoesNotHaveALabel()
+        {
+            classUnderTest.Parse("goto").Error.Should().Be("Branching commands must have a label");
+            classUnderTest.Parse("if-goto").Error.Should().Be("Branching commands must have a label");
+            classUnderTest.Parse("label").Error.Should().Be("Branching commands must have a label");
+        }
     }
 }

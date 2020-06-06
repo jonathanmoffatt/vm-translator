@@ -12,6 +12,19 @@
         And,
         Not,
         Push,
-        Pop
+        Pop,
+        Goto,
+        IfGoto,
+        Label
     }
+
+    public enum CommandCategory
+    {
+        Stack,
+        Branching,
+        Function,
+        Arithmetic,
+        Logical
+    }
+
 }
