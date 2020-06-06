@@ -3,10 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace VMTranslator.Tests
 {
-    #region WhenTranslatingPushOperations
+    #region WhenTranslatingPushInstructions
 
     [TestClass]
-    public class WhenTranslatingPushOperations
+    public class WhenTranslatingPushInstructions
     {
         private Translator classUnderTest;
         private readonly LineOfCode pushFromLocal = new LineOfCode
@@ -152,10 +152,10 @@ namespace VMTranslator.Tests
 
     #endregion
 
-    #region WhenTranslatingPopOperations
+    #region WhenTranslatingPopInstructions
 
     [TestClass]
-    public class WhenTranslatingPopOperations
+    public class WhenTranslatingPopInstructions
     {
         private Translator classUnderTest;
         private readonly LineOfCode popToLocal = new LineOfCode
@@ -286,10 +286,10 @@ namespace VMTranslator.Tests
 
     #endregion
 
-    #region WhenTranslatingArithmeticOperations
+    #region WhenTranslatingArithmeticInstructions
 
     [TestClass]
-    public class WhenTranslatingArithmeticOperations
+    public class WhenTranslatingArithmeticInstructions
     {
         private Translator classUnderTest;
 
@@ -360,6 +360,43 @@ namespace VMTranslator.Tests
         {
             classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Gt, LineNumber = 13 })
                 .Should().Be("// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_13\nD;JGT\nD=0\n@DONE_13\n0;JMP\n(YES_13)\nD=-1\n(DONE_13)\n@SP\nA=M\nM=D\n@SP\nM=M+1\n");
+        }
+    }
+
+    #endregion
+
+    #region WhenTranslatingBranchingInstructions
+
+    [TestClass]
+    public class WhenTranslatingBranchingInstructions
+    {
+        private Translator classUnderTest;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            classUnderTest = new Translator("Foo");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateLabel()
+        {
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Label, Label = "START", VmCode = "label START" })
+                .Should().Be("// label START\n(Foo$START)\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateGoTo()
+        {
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Goto, Label = "somewhere", VmCode = "goto somewhere" })
+                .Should().Be("// goto somewhere\n@Foo$somewhere\n0;JMP\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateIfGoto()
+        {
+            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.IfGoto, Label = "start", VmCode = "if-goto start" })
+                .Should().Be("// if-goto start\n@SP\nM=M-1\nA=M\nD=M\n@Foo$start\nD;JNE\n");
         }
     }
 
