@@ -455,6 +455,19 @@ namespace VMTranslator.Tests
             classUnderTest.Translate(loc)
                 .Should().Be("// function myFunction 3\n(Foo.myFunction)\n@3\nD=A\n(Foo.myFunction.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@Foo.myFunction.init\nD;JNE\n");
         }
+
+        [TestMethod]
+        public void ShouldTranslateFunctionReturn()
+        {
+            LineOfCode loc = new LineOfCode
+            {
+                VmCode = "return",
+                Instruction = InstructionType.Return,
+                FunctionName = "myFunction"
+            };
+            classUnderTest.Translate(loc)
+                .Should().Contain("endFrame");
+        }
     }
 
     #endregion
