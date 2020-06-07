@@ -4,10 +4,12 @@ namespace VMTranslator
     public class Parser
     {
         private int lineNumber;
+        private string functionName;
 
         public Parser()
         {
             lineNumber = 0;
+            functionName = null;
         }
 
         public LineOfCode Parse(string line)
@@ -53,6 +55,10 @@ namespace VMTranslator
             }
             if (loc.Instruction == InstructionType.Return && fragments.Length > 1)
                 loc.Error = "Return cannot have a name";
+            if (loc.Instruction == InstructionType.Function)
+                functionName = loc.FunctionName;
+            if (loc.Instruction == InstructionType.Return)
+                loc.FunctionName = functionName;
             return loc;
         }
 

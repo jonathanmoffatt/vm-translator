@@ -204,6 +204,14 @@ namespace VMTranslator.Tests
         }
 
         [TestMethod]
+        public void ShouldIncludeTheNameOfTheFunctionAlongWithTheReturnInstruction()
+        {
+            classUnderTest.Parse("function myFunction 5");
+            classUnderTest.Parse("push argument 3");
+            classUnderTest.Parse("return").FunctionName.Should().Be("myFunction");
+        }
+
+        [TestMethod]
         public void ShouldPutNumberOfLocalsIntoValueForFunctions()
         {
             classUnderTest.Parse("function myFunction 5").Value.Should().Be(5);
