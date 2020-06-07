@@ -1,33 +1,35 @@
-﻿namespace VMTranslator
+﻿using System;
+
+namespace VMTranslator
 {
     public class Translator
     {
-        private const string pushFromSegment = "// {0}\n@{1}\nD=M\n@{2}\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string pushFromTemp = "// {0}\n@5\nD=A\n@{2}\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string pushConstant = "// {0}\n@{2}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string pushFromPointer0 = "// {0}\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string pushFromPointer1 = "// {0}\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string pushFromStatic = "// {0}\n@{1}.{2}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string popToSegment = "// {0}\n@{1}\nD=M\n@{2}\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
-        private const string popToTemp = "// {0}\n@5\nD=A\n@{2}\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
-        private const string popToPointer0 = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n";
-        private const string popToPointer1 = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n";
-        private const string popToStatic = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@{1}.{2}\nM=D\n";
+        private const string pushFromSegment = "// {vmcode}\n@{segment}\nD=M\n@{value}\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushFromTemp = "// {vmcode}\n@5\nD=A\n@{value}\nA=D+A\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushConstant = "// {vmcode}\n@{value}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushFromPointer0 = "// {vmcode}\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushFromPointer1 = "// {vmcode}\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string pushFromStatic = "// {vmcode}\n@{segment}.{value}\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string popToSegment = "// {vmcode}\n@{segment}\nD=M\n@{value}\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
+        private const string popToTemp = "// {vmcode}\n@5\nD=A\n@{value}\nD=D+A\n@SP\nM=M-1\nA=M\nA=M\nD=D+A\nA=D-A\nD=D-A\nM=D\n";
+        private const string popToPointer0 = "// {vmcode}\n@SP\nM=M-1\nA=M\nD=M\n@THIS\nM=D\n";
+        private const string popToPointer1 = "// {vmcode}\n@SP\nM=M-1\nA=M\nD=M\n@THAT\nM=D\n";
+        private const string popToStatic = "// {vmcode}\n@SP\nM=M-1\nA=M\nD=M\n@{segment}.{value}\nM=D\n";
         private const string add = "// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D+M\n@SP\nM=M+1\n";
         private const string sub = "// sub\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=M-D\n@SP\nM=M+1\n";
         private const string and = "// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D&M\n@SP\nM=M+1\n";
         private const string or = "// add\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nM=D|M\n@SP\nM=M+1\n";
         private const string neg = "// neg\n@SP\nM=M-1\nA=M\nD=M\nM=-D\n@SP\nM=M+1\n";
         private const string not = "// not\n@SP\nM=M-1\nA=M\nD=M\nM=!D\n@SP\nM=M+1\n";
-        private const string eq = "// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@EQ_{0}\nD;JEQ\nD=-1\n(EQ_{0})\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string lt = "// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_{0}\nD;JLT\nD=0\n@DONE_{0}\n0;JMP\n(YES_{0})\nD=-1\n(DONE_{0})\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string gt = "// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_{0}\nD;JGT\nD=0\n@DONE_{0}\n0;JMP\n(YES_{0})\nD=-1\n(DONE_{0})\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
-        private const string label = "// {0}\n({1}${2})\n";
-        private const string goTo = "// {0}\n@{1}${2}\n0;JMP\n";
-        private const string ifGoto = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@{1}${2}\nD;JNE\n";
-        private const string functionNoArgs = "// {0}\n({1}.{2})\n";
-        private const string function1Arg = "// {0}\n({1}.{2})\n@SP\nA=M\nM=0\n@SP\nM=M+1\n";
-        private const string functionMultipleArgs = "// {0}\n({1}.{2})\n@{3}\nD=A\n({1}.{2}.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@{1}.{2}.init\nD;JNE\n";
+        private const string eq = "// eq\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@EQ_{linenumber}\nD;JEQ\nD=-1\n(EQ_{linenumber})\nD=!D\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string lt = "// lt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_{linenumber}\nD;JLT\nD=0\n@DONE_{linenumber}\n0;JMP\n(YES_{linenumber})\nD=-1\n(DONE_{linenumber})\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string gt = "// gt\n@SP\nM=M-1\nA=M\nD=M\n@SP\nM=M-1\nA=M\nD=M-D\n@YES_{linenumber}\nD;JGT\nD=0\n@DONE_{linenumber}\n0;JMP\n(YES_{linenumber})\nD=-1\n(DONE_{linenumber})\n@SP\nA=M\nM=D\n@SP\nM=M+1\n";
+        private const string label = "// {vmcode}\n({filename}${label})\n";
+        private const string goTo = "// {vmcode}\n@{filename}${label}\n0;JMP\n";
+        private const string ifGoto = "// {vmcode}\n@SP\nM=M-1\nA=M\nD=M\n@{filename}${label}\nD;JNE\n";
+        private const string functionNoArgs = "// {vmcode}\n({filename}.{functionname})\n";
+        private const string function1Arg = "// {vmcode}\n({filename}.{functionname})\n@SP\nA=M\nM=0\n@SP\nM=M+1\n";
+        private const string functionMultipleArgs = "// {vmcode}\n({filename}.{functionname})\n@{value}\nD=A\n({filename}.{functionname}.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@{filename}.{functionname}.init\nD;JNE\n";
 
         private readonly string filename;
 
@@ -41,11 +43,11 @@
             switch (loc.Instruction)
             {
                 case InstructionType.Push:
-                    string push = GetPushAssembly(loc);
-                    return string.Format(push, loc.VmCode, GetRamForSegment(loc), loc.Value);
+                    string push = GetPushTemplate(loc);
+                    return Merge(push, loc);
                 case InstructionType.Pop:
-                    string pop = GetPopAssembly(loc);
-                    return string.Format(pop, loc.VmCode, GetRamForSegment(loc), loc.Value);
+                    string pop = GetPopTemplate(loc);
+                    return Merge(pop, loc);
                 case InstructionType.Add:
                     return add;
                 case InstructionType.Sub:
@@ -59,29 +61,41 @@
                 case InstructionType.Not:
                     return not;
                 case InstructionType.Eq:
-                    return string.Format(eq, loc.LineNumber);
+                    return Merge(eq, loc);
                 case InstructionType.Lt:
-                    return string.Format(lt, loc.LineNumber);
+                    return Merge(lt, loc);
                 case InstructionType.Gt:
-                    return string.Format(gt, loc.LineNumber);
+                    return Merge(gt, loc);
                 case InstructionType.Label:
-                    return string.Format(label, loc.VmCode, filename, loc.Label);
+                    return Merge(label, loc);
                 case InstructionType.Goto:
-                    return string.Format(goTo, loc.VmCode, filename, loc.Label);
+                    return Merge(goTo, loc);
                 case InstructionType.IfGoto:
-                    return string.Format(ifGoto, loc.VmCode, filename, loc.Label);
+                    return Merge(ifGoto, loc);
                 case InstructionType.Function:
                     if (loc.Value == 0)
-                        return string.Format(functionNoArgs, loc.VmCode, filename, loc.FunctionName);
+                        return Merge(functionNoArgs, loc);
                     if (loc.Value == 1)
-                        return string.Format(function1Arg, loc.VmCode, filename, loc.FunctionName, loc.Value);
-                    return string.Format(functionMultipleArgs, loc.VmCode, filename, loc.FunctionName, loc.Value);
+                        return Merge(function1Arg, loc);
+                    return Merge(functionMultipleArgs, loc);
                 default:
                     return null;
             }
         }
 
-        private static string GetPopAssembly(LineOfCode loc)
+        private string Merge(string template, LineOfCode loc)
+        {
+            return template
+                .Replace("{vmcode}", loc.VmCode, StringComparison.CurrentCultureIgnoreCase)
+                .Replace("{functionname}", loc.FunctionName, StringComparison.CurrentCultureIgnoreCase)
+                .Replace("{label}", loc.Label, StringComparison.CurrentCultureIgnoreCase)
+                .Replace("{linenumber}", loc.LineNumber.ToString())
+                .Replace("{value}", loc.Value.ToString(), StringComparison.CurrentCultureIgnoreCase)
+                .Replace("{segment}", GetRamForSegment(loc), StringComparison.CurrentCultureIgnoreCase)
+                .Replace("{filename}", filename);
+        }
+
+        private static string GetPopTemplate(LineOfCode loc)
         {
             switch (loc.Segment)
             {
@@ -92,7 +106,7 @@
             }
         }
 
-        private static string GetPushAssembly(LineOfCode loc)
+        private static string GetPushTemplate(LineOfCode loc)
         {
             switch (loc.Segment)
             {
