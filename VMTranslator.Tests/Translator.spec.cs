@@ -401,4 +401,61 @@ namespace VMTranslator.Tests
     }
 
     #endregion
+
+    #region WhenTranslatingFunctionInstructions
+
+    [TestClass]
+    public class WhenTranslatingFunctionInstructions
+    {
+        private Translator classUnderTest;
+
+        [TestInitialize]
+        public void Setup()
+        {
+            classUnderTest = new Translator("Foo");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateFunctionWithNoLocalVariables()
+        {
+            LineOfCode loc = new LineOfCode
+            {
+                VmCode = "function myFunction 0",
+                Instruction = InstructionType.Function,
+                FunctionName = "myFunction",
+                Value = 0
+            };
+            classUnderTest.Translate(loc)
+                .Should().Be("// function myFunction 0\n(Foo.myFunction)\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateFunctionWithASingleLocalVariable()
+        {
+            LineOfCode loc = new LineOfCode {
+                VmCode = "function myFunction 1",
+                Instruction = InstructionType.Function,
+                FunctionName = "myFunction",
+                Value = 1
+            };
+            classUnderTest.Translate(loc)
+                .Should().Be("// function myFunction 1\n(Foo.myFunction)\n@SP\nA=M\nM=0\n@SP\nM=M+1\n");
+        }
+
+        [TestMethod]
+        public void ShouldTranslateFunctionWithMoreThanOneLocalVariable()
+        {
+            LineOfCode loc = new LineOfCode
+            {
+                VmCode = "function myFunction 3",
+                Instruction = InstructionType.Function,
+                FunctionName = "myFunction",
+                Value = 3
+            };
+            classUnderTest.Translate(loc)
+                .Should().Be("// function myFunction 3\n(Foo.myFunction)\n@3\nD=A\n(Foo.myFunction.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@Foo.myFunction.init\nD;JNE\n");
+        }
+    }
+
+    #endregion
 }

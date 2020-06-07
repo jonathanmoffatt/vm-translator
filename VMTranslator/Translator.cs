@@ -25,6 +25,9 @@
         private const string label = "// {0}\n({1}${2})\n";
         private const string goTo = "// {0}\n@{1}${2}\n0;JMP\n";
         private const string ifGoto = "// {0}\n@SP\nM=M-1\nA=M\nD=M\n@{1}${2}\nD;JNE\n";
+        private const string functionNoArgs = "// {0}\n({1}.{2})\n";
+        private const string function1Arg = "// {0}\n({1}.{2})\n@SP\nA=M\nM=0\n@SP\nM=M+1\n";
+        private const string functionMultipleArgs = "// {0}\n({1}.{2})\n@{3}\nD=A\n({1}.{2}.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@{1}.{2}.init\nD;JNE\n";
 
         private readonly string filename;
 
@@ -67,6 +70,12 @@
                     return string.Format(goTo, loc.VmCode, filename, loc.Label);
                 case InstructionType.IfGoto:
                     return string.Format(ifGoto, loc.VmCode, filename, loc.Label);
+                case InstructionType.Function:
+                    if (loc.Value == 0)
+                        return string.Format(functionNoArgs, loc.VmCode, filename, loc.FunctionName);
+                    if (loc.Value == 1)
+                        return string.Format(function1Arg, loc.VmCode, filename, loc.FunctionName, loc.Value);
+                    return string.Format(functionMultipleArgs, loc.VmCode, filename, loc.FunctionName, loc.Value);
                 default:
                     return null;
             }
