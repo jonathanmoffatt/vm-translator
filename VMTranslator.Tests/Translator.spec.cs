@@ -468,6 +468,21 @@ namespace VMTranslator.Tests
             classUnderTest.Translate(loc)
                 .Should().Contain("endFrame");
         }
+
+        [TestMethod]
+        public void ShouldTranslateFunctionCall()
+        {
+            LineOfCode loc = new LineOfCode
+            {
+                VmCode = "call myFunction 2",
+                Instruction = InstructionType.Call,
+                FunctionName = "myFunction",
+                Value = 2,
+                LineNumber = 123
+            };
+            classUnderTest.Translate(loc)
+                .Should().Contain("@Foo.myFunction.return.123");
+        }
     }
 
     #endregion
