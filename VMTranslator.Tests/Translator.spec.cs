@@ -70,13 +70,14 @@ namespace VMTranslator.Tests
             VmCode = "push static 5",
             Instruction = InstructionType.Push,
             Segment = Segment.Static,
+            FileName = "Foo",
             Value = 5
         };
 
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Translator("Foo");
+            classUnderTest = new Translator();
         }
 
         [TestMethod]
@@ -212,13 +213,14 @@ namespace VMTranslator.Tests
             VmCode = "pop static 5",
             Instruction = InstructionType.Pop,
             Segment = Segment.Static,
+            FileName = "Foo",
             Value = 5
         };
 
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Translator("Foo");
+            classUnderTest = new Translator();
         }
 
         [TestMethod]
@@ -296,7 +298,7 @@ namespace VMTranslator.Tests
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Translator("Foo");
+            classUnderTest = new Translator();
         }
 
         [TestMethod]
@@ -375,27 +377,27 @@ namespace VMTranslator.Tests
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Translator("Foo");
+            classUnderTest = new Translator();
         }
 
         [TestMethod]
         public void ShouldTranslateLabel()
         {
-            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Label, Label = "START", VmCode = "label START" })
+            classUnderTest.Translate(new LineOfCode { FileName = "Foo", Instruction = InstructionType.Label, Label = "START", VmCode = "label START" })
                 .Should().Be("// label START\n(Foo$START)\n");
         }
 
         [TestMethod]
         public void ShouldTranslateGoTo()
         {
-            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.Goto, Label = "somewhere", VmCode = "goto somewhere" })
+            classUnderTest.Translate(new LineOfCode { FileName = "Foo", Instruction = InstructionType.Goto, Label = "somewhere", VmCode = "goto somewhere" })
                 .Should().Be("// goto somewhere\n@Foo$somewhere\n0;JMP\n");
         }
 
         [TestMethod]
         public void ShouldTranslateIfGoto()
         {
-            classUnderTest.Translate(new LineOfCode { Instruction = InstructionType.IfGoto, Label = "start", VmCode = "if-goto start" })
+            classUnderTest.Translate(new LineOfCode { FileName = "Foo", Instruction = InstructionType.IfGoto, Label = "start", VmCode = "if-goto start" })
                 .Should().Be("// if-goto start\n@SP\nM=M-1\nA=M\nD=M\n@Foo$start\nD;JNE\n");
         }
     }
@@ -412,7 +414,7 @@ namespace VMTranslator.Tests
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Translator("Foo");
+            classUnderTest = new Translator();
         }
 
         [TestMethod]
@@ -423,6 +425,7 @@ namespace VMTranslator.Tests
                 VmCode = "function myFunction 0",
                 Instruction = InstructionType.Function,
                 FunctionName = "myFunction",
+                FileName = "Foo",
                 Value = 0
             };
             classUnderTest.Translate(loc)
@@ -436,6 +439,7 @@ namespace VMTranslator.Tests
                 VmCode = "function myFunction 1",
                 Instruction = InstructionType.Function,
                 FunctionName = "myFunction",
+                FileName = "Foo",
                 Value = 1
             };
             classUnderTest.Translate(loc)
@@ -450,6 +454,7 @@ namespace VMTranslator.Tests
                 VmCode = "function myFunction 3",
                 Instruction = InstructionType.Function,
                 FunctionName = "myFunction",
+                FileName = "Foo",
                 Value = 3
             };
             classUnderTest.Translate(loc)
@@ -477,6 +482,7 @@ namespace VMTranslator.Tests
                 VmCode = "call myFunction 2",
                 Instruction = InstructionType.Call,
                 FunctionName = "myFunction",
+                FileName = "Foo",
                 Value = 2,
                 LineNumber = 123
             };

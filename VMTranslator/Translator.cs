@@ -33,13 +33,6 @@ namespace VMTranslator
         private const string functionReturn = "// {vmcode}\n@LCL\nD=M\n@{filename}.{functionname}.endFrame\nM=D \n@5\nD=A\n@{filename}.{functionname}.endFrame\nA=M\nA=A-D\nD=M\n@{filename}.{functionname}.retAddr\nM=D\n@SP\nM=M-1\n@SP\nA=M\nD=M\n@ARG\nA=M\nM=D\n@ARG\nD=M+1\n@SP\nM=D\n@{filename}.{functionname}.endFrame\nA=M-1\nD=M\n@THAT\nM=D\n@2\nD=A\n@{filename}.{functionname}.endFrame\nA=M-D\nD=M\n@THIS\nM=D\n@3\nD=A\n@{filename}.{functionname}.endFrame\nA=M-D\nD=M\n@ARG\nM=D\n@4\nD=A\n@{filename}.{functionname}.endFrame\nA=M-D\nD=M\n@LCL\nM=D\n@{filename}.{functionname}.retAddr\nA=M\n0;JMP\n";
         private const string call = "// {vmcode}\n@{filename}.{functionname}.return.{linenumber}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@5\nD=A\n@SP\nA=M\nD=A-D\n@{value}\nD=D-A\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@{filename}.{functionname}\n0;JMP\n(@{filename}.{functionname}.return.{linenumber})\n";
 
-        private readonly string filename;
-
-        public Translator(string filename)
-        {
-            this.filename = filename;
-        }
-
         public string Translate(LineOfCode loc)
         {
             switch (loc.Instruction)
@@ -98,7 +91,7 @@ namespace VMTranslator
                 .Replace("{linenumber}", loc.LineNumber.ToString())
                 .Replace("{value}", loc.Value.ToString(), StringComparison.CurrentCultureIgnoreCase)
                 .Replace("{segment}", GetRamForSegment(loc), StringComparison.CurrentCultureIgnoreCase)
-                .Replace("{filename}", filename);
+                .Replace("{filename}", loc.FileName);
         }
 
         private static string GetPopTemplate(LineOfCode loc)
@@ -132,7 +125,7 @@ namespace VMTranslator
                 case Segment.Local: return "LCL";
                 case Segment.This: return "THIS";
                 case Segment.That: return "THAT";
-                case Segment.Static: return $"{filename}";
+                case Segment.Static: return $"{loc.FileName}";
                 default: return null;
             }
         }

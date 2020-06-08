@@ -5,11 +5,13 @@ namespace VMTranslator
     {
         private int lineNumber;
         private string functionName;
+        private string fileName;
 
-        public Parser()
+        public Parser(string fileName)
         {
             lineNumber = 0;
             functionName = null;
+            this.fileName = fileName;
         }
 
         public LineOfCode Parse(string line)
@@ -127,7 +129,7 @@ namespace VMTranslator
 
         private LineOfCode ParseInstruction(string[] fragments, string line)
         {
-            LineOfCode loc = new LineOfCode { VmCode = line, LineNumber = lineNumber };
+            LineOfCode loc = new LineOfCode { VmCode = line, LineNumber = lineNumber, FileName = fileName };
             if (Enum.TryParse(fragments[0].Replace("-", ""), true, out InstructionType c))
                 loc.Instruction = c;
             return loc;

@@ -9,6 +9,7 @@
         public int? Value { get; set; }
         public string Label { get; set; }
         public string FunctionName { get; set; }
+        public string FileName { get; set; }
         public string Error { get; set; }
 
         public InstructionCategory Category

@@ -11,7 +11,7 @@ namespace VMTranslator.Tests
         [TestInitialize]
         public void Setup()
         {
-            classUnderTest = new Parser();
+            classUnderTest = new Parser("myFilename");
         }
 
         [TestMethod]
@@ -39,6 +39,12 @@ namespace VMTranslator.Tests
         public void ShouldReturnNullIfLineIsAComment()
         {
             classUnderTest.Parse("   \t\t// comments etc").Should().BeNull();
+        }
+
+        [TestMethod]
+        public void ShouldSetFilename()
+        {
+            classUnderTest.Parse("add").FileName.Should().Be("myFilename");
         }
 
         [TestMethod]
