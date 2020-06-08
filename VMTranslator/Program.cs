@@ -92,9 +92,13 @@ namespace VMTranslator
         private static string[] Translate(LineOfCode[] parsedLines, bool isSingleFile)
         {
             var translator = new Translator();
+            var parser = new Parser("xxx");
             var results = new List<string>();
             if (!isSingleFile)
+            {
                 results.Add(Translator.SysInit);
+                results.Add(translator.Translate(parser.Parse("call Sys.init 0")));
+            }
             results.AddRange(parsedLines.Select(p => translator.Translate(p)));
             return results.ToArray();
         }
