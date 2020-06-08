@@ -69,15 +69,6 @@ namespace VMTranslator
             return Directory.GetFiles(sourceFileOrDirectory).Where(f => Path.GetExtension(f) == ".vm").ToArray();
         }
 
-        private static string GetOutputFileName(string sourceFileOrDirectory)
-        {
-            string dir = Path.GetDirectoryName(sourceFileOrDirectory);
-            if (File.Exists(sourceFileOrDirectory))
-                return $"{dir}/{Path.GetFileNameWithoutExtension(sourceFileOrDirectory)}.asm";
-            string[] directories = dir.Split(Path.DirectorySeparatorChar);
-            return $"{dir}/{directories.Last()}.asm";
-        }
-
         private static LineOfCode[] Parse(string[] sourceFiles)
         {
             var parsedLines = new List<LineOfCode>();
@@ -118,6 +109,14 @@ namespace VMTranslator
                 File.Delete(outputFile);
             File.WriteAllLines(outputFile, results);
             Console.WriteLine($"Results written to {outputFile}");
+        }
+
+        private static string GetOutputFileName(string sourceFileOrDirectory)
+        {
+            string dir = Path.GetDirectoryName(sourceFileOrDirectory);
+            string fn = Path.GetFileNameWithoutExtension(sourceFileOrDirectory);
+            char sep = Path.DirectorySeparatorChar;
+            return File.Exists(sourceFileOrDirectory) ? $"{dir}{sep}{fn}.asm" : $"{dir}{sep}{fn}{sep}{fn}.asm";
         }
 
     }
