@@ -41,5 +41,10 @@
             }
         }
 
+        public override string ToString()
+        {
+            return VmCode;
+        }
+
     }
 }

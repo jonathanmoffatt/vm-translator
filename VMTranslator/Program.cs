@@ -10,16 +10,18 @@ namespace VMTranslator
         static void Main(string[] args)
         {
             DisplayIntro();
-            if (!ValidateSourceFileOrDirectory(args))
+
+            if (!ValidateArguments(args))
                 return;
             string sourceFileOrDirectory = args[0];
+            bool isSingleFile = File.Exists(sourceFileOrDirectory);
 
-            string[] sourceFiles = GetSourceFiles(sourceFileOrDirectory);
+            string[] sourceFiles = GetSourceFiles(sourceFileOrDirectory, isSingleFile);
             LineOfCode[] parsedLines = Parse(sourceFiles);
             if (!ValidateParsing(parsedLines))
                 return;
 
-            string[] results = Translate(parsedLines);
+            string[] results = Translate(parsedLines, isSingleFile);
             WriteToOutput(sourceFileOrDirectory, results);
         }
 
@@ -40,7 +42,7 @@ namespace VMTranslator
             Console.WriteLine("    On startup, the assembly code will initialise SP and will call the function Sys.init.");
         }
 
-        private static bool ValidateSourceFileOrDirectory(string[] args)
+        private static bool ValidateArguments(string[] args)
         {
             string error = null;
             if (args.Length == 0)
@@ -62,9 +64,9 @@ namespace VMTranslator
             return error == null;
         }
 
-        private static string[] GetSourceFiles(string sourceFileOrDirectory)
+        private static string[] GetSourceFiles(string sourceFileOrDirectory, bool isSingleFile)
         {
-            if (File.Exists(sourceFileOrDirectory))
+            if (isSingleFile)
                 return new[] { sourceFileOrDirectory };
             return Directory.GetFiles(sourceFileOrDirectory).Where(f => Path.GetExtension(f) == ".vm").ToArray();
         }
@@ -87,10 +89,14 @@ namespace VMTranslator
             return parsedLines.Where(p => p != null).ToArray();
         }
 
-        private static string[] Translate(LineOfCode[] parsedLines)
+        private static string[] Translate(LineOfCode[] parsedLines, bool isSingleFile)
         {
             var translator = new Translator();
-            return parsedLines.Select(p => translator.Translate(p)).ToArray();
+            var results = new List<string>();
+            if (!isSingleFile)
+                results.Add(Translator.SysInit);
+            results.AddRange(parsedLines.Select(p => translator.Translate(p)));
+            return results.ToArray();
         }
 
         private static bool ValidateParsing(LineOfCode[] parsedLines)

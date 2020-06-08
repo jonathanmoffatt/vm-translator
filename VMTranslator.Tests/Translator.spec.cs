@@ -429,7 +429,7 @@ namespace VMTranslator.Tests
                 Value = 0
             };
             classUnderTest.Translate(loc)
-                .Should().Be("// function myFunction 0\n(Foo.myFunction)\n");
+                .Should().Be("// function myFunction 0\n(myFunction)\n");
         }
 
         [TestMethod]
@@ -443,7 +443,7 @@ namespace VMTranslator.Tests
                 Value = 1
             };
             classUnderTest.Translate(loc)
-                .Should().Be("// function myFunction 1\n(Foo.myFunction)\n@SP\nA=M\nM=0\n@SP\nM=M+1\n");
+                .Should().Be("// function myFunction 1\n(myFunction)\n@SP\nA=M\nM=0\n@SP\nM=M+1\n");
         }
 
         [TestMethod]
@@ -458,7 +458,7 @@ namespace VMTranslator.Tests
                 Value = 3
             };
             classUnderTest.Translate(loc)
-                .Should().Be("// function myFunction 3\n(Foo.myFunction)\n@3\nD=A\n(Foo.myFunction.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@Foo.myFunction.init\nD;JNE\n");
+                .Should().Be("// function myFunction 3\n(myFunction)\n@3\nD=A\n(myFunction.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@myFunction.init\nD;JNE\n");
         }
 
         [TestMethod]
@@ -487,7 +487,7 @@ namespace VMTranslator.Tests
                 LineNumber = 123
             };
             classUnderTest.Translate(loc)
-                .Should().Contain("@Foo.myFunction.return.123");
+                .Should().Contain("@myFunction.return.123");
         }
     }
 
