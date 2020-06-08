@@ -31,9 +31,9 @@ namespace VMTranslator
         private const string function1Arg = "// {vmcode}\n({functionname})\n@SP\nA=M\nM=0\n@SP\nM=M+1\n";
         private const string functionMultipleArgs = "// {vmcode}\n({functionname})\n@{value}\nD=A\n({functionname}.init)\n@SP\nA=M\nM=0\n@SP\nM=M+1\nD=D-1\n@{functionname}.init\nD;JNE\n";
         private const string functionReturn = "// {vmcode}\n@LCL\nD=M\n@{functionname}.endFrame\nM=D \n@5\nD=A\n@{functionname}.endFrame\nA=M\nA=A-D\nD=M\n@{functionname}.retAddr\nM=D\n@SP\nM=M-1\n@SP\nA=M\nD=M\n@ARG\nA=M\nM=D\n@ARG\nD=M+1\n@SP\nM=D\n@{functionname}.endFrame\nA=M-1\nD=M\n@THAT\nM=D\n@2\nD=A\n@{functionname}.endFrame\nA=M-D\nD=M\n@THIS\nM=D\n@3\nD=A\n@{functionname}.endFrame\nA=M-D\nD=M\n@ARG\nM=D\n@4\nD=A\n@{functionname}.endFrame\nA=M-D\nD=M\n@LCL\nM=D\n@{functionname}.retAddr\nA=M\n0;JMP\n";
-        private const string call = "// {vmcode}\n@{functionname}.return.{linenumber}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@5\nD=A\n@SP\nA=M\nD=A-D\n@{value}\nD=D-A\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@{functionname}\n0;JMP\n({functionname}.return.{linenumber})\n";
+        private const string call = "// {vmcode}\n@{functionname}.return.{linenumber}\nD=A\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@LCL\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@ARG\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THIS\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@THAT\nD=M\n@SP\nA=M\nM=D\n@SP\nM=M+1\n@5\nD=A\n@SP\nA=M\nD=A-D\n@{value}\nD=D-A\n@ARG\nM=D\n@SP\nD=M\n@LCL\nM=D\n@{functionname}\n0;JMP\n({functionname}.return.{linenumber})\n";
 
-        public const string SysInit = "@256\nD=A\n@SP\nM=D\n@Sys.init\n0;JMP\n";
+        public const string SysInit = "@256\nD=A\n@SP\nM=D\n";
 
         public string Translate(LineOfCode loc)
         {
