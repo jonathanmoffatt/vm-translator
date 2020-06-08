@@ -252,5 +252,15 @@ namespace VMTranslator.Tests
         {
             classUnderTest.Parse("call myFunction blah").Error.Should().Be("Value 'blah' is not a valid integer");
         }
+
+        [TestMethod]
+        public void ShouldHandleCommentsOnTheSameLineAsCode()
+        {
+            LineOfCode loc = classUnderTest.Parse("push constant 4000	// test THIS and THAT context save");
+            loc.Error.Should().BeNull();
+            loc.Value.Should().Be(4000);
+        }
+
+
     }
 }

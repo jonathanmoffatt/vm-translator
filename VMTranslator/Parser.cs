@@ -17,7 +17,7 @@ namespace VMTranslator
         public LineOfCode Parse(string line)
         {
             lineNumber++;
-            line = line.Trim();
+            line = StripComments(line);
             if (IsCommentOrWhitespace(line))
                 return null;
 
@@ -38,6 +38,12 @@ namespace VMTranslator
                 default:
                     return ParseUnrecognisedInstruction(loc, fragments);
             }
+        }
+
+        private static string StripComments(string line)
+        {
+            string[] fragments = line.Split("//");
+            return fragments[0].Trim();
         }
 
         private LineOfCode ParseFunctionInstruction(LineOfCode loc, string[] fragments)
