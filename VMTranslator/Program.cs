@@ -9,9 +9,7 @@ namespace VMTranslator
     {
         static void Main(string[] args)
         {
-            DisplayIntro();
-
-            if (!ValidateArguments(args))
+            if (!Initialise(args))
                 return;
             string sourceFileOrDirectory = args[0];
             bool isSingleFile = File.Exists(sourceFileOrDirectory);
@@ -25,50 +23,62 @@ namespace VMTranslator
             WriteToOutput(sourceFileOrDirectory, results);
         }
 
-        private static void DisplayIntro()
+        private static bool Initialise(string[] args)
         {
             Console.WriteLine("VM Translator");
             Console.WriteLine("-------------");
-            Console.WriteLine("Usage (simple):      dotnet ./VMTranslator.dll [source-file]");
-            Console.WriteLine("Usage (complex):     dotnet ./VMTranslator.dll [source-directory]");
-            Console.WriteLine();
-            Console.WriteLine("source-file:");
-            Console.WriteLine("    Path to file containing VM code (must have an .vm file extension).");
-            Console.WriteLine("    Results will be written to a file named after the source file, but with a .asm file extension. Any existing file with this name will be overwritten.");
-            Console.WriteLine("");
-            Console.WriteLine("source-directory:");
-            Console.WriteLine("    Path to directory containing .vm files.");
-            Console.WriteLine("    Results will be written to a file named after the directory, but with a .asm file extension. Any existing file with this name will be overwritten.");
-            Console.WriteLine("    On startup, the assembly code will initialise SP and will call the function Sys.init.");
+            string error = GetValidationErrors(args);
+            if (error != null)
+            {
+                Console.WriteLine("Usage (simple):      dotnet ./VMTranslator.dll [source-file]");
+                Console.WriteLine("Usage (complex):     dotnet ./VMTranslator.dll [source-directory]");
+                Console.WriteLine();
+                Console.WriteLine("source-file:");
+                Console.WriteLine("    Path to file containing VM code (must have an .vm file extension).");
+                Console.WriteLine("    Results will be written to a file named after the source file, but with a .asm file extension. Any existing file with this name will be overwritten.");
+                Console.WriteLine("");
+                Console.WriteLine("source-directory:");
+                Console.WriteLine("    Path to directory containing .vm files.");
+                Console.WriteLine("    Results will be written to a file named after the directory, but with a .asm file extension. Any existing file with this name will be overwritten.");
+                Console.WriteLine("    On startup, the assembly code will initialise SP and will call the function Sys.init.");
+                Console.WriteLine();
+                Console.WriteLine(error);
+                return false;
+            }
+            return true;
         }
 
-        private static bool ValidateArguments(string[] args)
+        private static string GetValidationErrors(string[] args)
         {
-            string error = null;
             if (args.Length == 0)
-                error = "No source file or directory specified.";
+                return "No source file or directory specified.";
             else
             {
                 string sourceFileOrDirectory = args[0];
                 bool isDirectory = Directory.Exists(sourceFileOrDirectory);
                 bool isFile = File.Exists(sourceFileOrDirectory);
                 if (!isDirectory && !isFile)
-                    error = $"Path {sourceFileOrDirectory} does not exist.";
+                    return $"Path {sourceFileOrDirectory} does not exist.";
                 if (isFile && Path.GetExtension(sourceFileOrDirectory) != ".vm")
-                    error = $"Source file {sourceFileOrDirectory} does not have a .vm file extension.";
+                    return $"Source file {sourceFileOrDirectory} does not have a .vm file extension.";
                 if (isDirectory && !Directory.GetFiles(sourceFileOrDirectory).Any(f => Path.GetExtension(f) == ".vm"))
-                    error = $"Source directory {sourceFileOrDirectory} does not contain any .vm files.";
+                    return $"Source directory {sourceFileOrDirectory} does not contain any .vm files.";
             }
-            if (error != null)
-                Console.WriteLine(error);
-            return error == null;
+            return null;
         }
 
         private static string[] GetSourceFiles(string sourceFileOrDirectory, bool isSingleFile)
         {
+            Console.WriteLine($"Processing {(isSingleFile ? "file" : "directory")} {sourceFileOrDirectory}");
             if (isSingleFile)
                 return new[] { sourceFileOrDirectory };
-            return Directory.GetFiles(sourceFileOrDirectory).Where(f => Path.GetExtension(f) == ".vm").ToArray();
+            string[] files = Directory.GetFiles(sourceFileOrDirectory).Where(f => Path.GetExtension(f) == ".vm").ToArray();
+            Console.WriteLine("Files in directory:");
+            foreach (string file in files)
+            {
+                Console.WriteLine($"    {file}");
+            }
+            return files;
         }
 
         private static LineOfCode[] Parse(string[] sourceFiles)
@@ -126,7 +136,9 @@ namespace VMTranslator
             string dir = Path.GetDirectoryName(sourceFileOrDirectory);
             string fn = Path.GetFileNameWithoutExtension(sourceFileOrDirectory);
             char sep = Path.DirectorySeparatorChar;
-            return File.Exists(sourceFileOrDirectory) ? $"{dir}{sep}{fn}.asm" : $"{dir}{sep}{fn}{sep}{fn}.asm";
+            if (File.Exists(sourceFileOrDirectory))
+                return $"{dir}{sep}{fn}.asm";
+            return dir != null && dir != "" ? $"{dir}{sep}{fn}{sep}{fn}.asm" : $"{fn}{sep}{fn}.asm";
         }
 
     }

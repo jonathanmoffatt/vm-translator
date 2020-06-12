@@ -92,12 +92,12 @@ namespace VMTranslator
         private string Merge(string template, LineOfCode loc)
         {
             return template
-                .Replace("{vmcode}", loc.VmCode, StringComparison.CurrentCultureIgnoreCase)
-                .Replace("{functionname}", loc.FunctionName, StringComparison.CurrentCultureIgnoreCase)
-                .Replace("{label}", loc.Label, StringComparison.CurrentCultureIgnoreCase)
+                .Replace("{vmcode}", loc.VmCode)
+                .Replace("{functionname}", loc.FunctionName)
+                .Replace("{label}", loc.Label)
                 .Replace("{linenumber}", loc.LineNumber.ToString())
-                .Replace("{value}", loc.Value.ToString(), StringComparison.CurrentCultureIgnoreCase)
-                .Replace("{segment}", GetRamForSegment(loc), StringComparison.CurrentCultureIgnoreCase)
+                .Replace("{value}", loc.Value.ToString())
+                .Replace("{segment}", GetRamForSegment(loc))
                 .Replace("{filename}", loc.FileName);
         }
 
